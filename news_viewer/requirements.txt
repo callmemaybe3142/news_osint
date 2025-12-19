@@ -1,0 +1,8 @@
+# No additional dependencies needed - using built-in tkinter
+# If you want to use the viewer, just run: python viewer.py
+
+# Tkinter is built-in with Python
+# Pillow is optional but recommended for better image handling
+Pillow>=10.0.0
+asyncpg>=0.29.0
+python-dotenv>=1.0.0
