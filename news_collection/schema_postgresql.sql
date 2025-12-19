@@ -55,10 +55,18 @@ CREATE INDEX IF NOT EXISTS idx_messages_duplicate_of ON messages(duplicate_of_ch
 CREATE INDEX IF NOT EXISTS idx_messages_grouped_id ON messages(grouped_id);
 CREATE INDEX IF NOT EXISTS idx_messages_forward_from ON messages(forward_from_channel_id, forward_from_message_id);
 
--- Full-text search index for message text
+-- Enable pg_trgm extension for partial text search (LIKE/ILIKE queries)
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
+-- Full-text search index for whole word matching
 -- Using 'simple' configuration for Burmese language support (no stemming, works with any language)
 CREATE INDEX IF NOT EXISTS idx_messages_text_fts ON messages 
 USING GIN(to_tsvector('simple', COALESCE(message_text, '')));
+
+-- Trigram index for partial text search (supports LIKE '%တရုတ်%' queries)
+-- This enables fast searching for partial Burmese text
+CREATE INDEX IF NOT EXISTS idx_messages_text_trgm ON messages 
+USING GIN(message_text gin_trgm_ops);
 
 -- ============================================================================
 -- 3. IMAGES TABLE
