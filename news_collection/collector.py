@@ -334,9 +334,24 @@ class NewsCollector:
                 
                 logger.info(f"Found {len(channels)} channels to process")
                 
-                # Process each channel
-                for channel_info in channels:
-                    await self.process_channel(channel_info)
+                # Process channels concurrently (4 at a time)
+                concurrent_limit = 5
+                logger.info(f"Processing {concurrent_limit} channels concurrently for faster collection")
+                
+                for i in range(0, len(channels), concurrent_limit):
+                    # Get batch of channels
+                    batch = channels[i:i+concurrent_limit]
+                    batch_names = [ch['name'] for ch in batch]
+                    logger.info(f"Processing batch: {', '.join(batch_names)}")
+                    
+                    # Process batch concurrently
+                    tasks = [self.process_channel(channel_info) for channel_info in batch]
+                    results = await asyncio.gather(*tasks, return_exceptions=True)
+                    
+                    # Log any errors
+                    for channel_info, result in zip(batch, results):
+                        if isinstance(result, Exception):
+                            logger.error(f"Error processing channel {channel_info['name']}: {result}")
                 
                 logger.info("Collection completed successfully")
                 

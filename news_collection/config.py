@@ -41,7 +41,7 @@ class Config:
     KEEP_WEBP = True  # Keep WebP format as-is
     
     # Performance
-    BATCH_SIZE = 100  # Process messages in batches for duplicate checking
+    BATCH_SIZE = 500  # Process messages in batches for duplicate checking
     
     # Logging
     LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")

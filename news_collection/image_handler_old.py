@@ -1,17 +1,15 @@
-"""Image handling: download, compression, and deduplication - Async optimized."""
+"""Image handling: download, compression, and deduplication."""
 import os
 from pathlib import Path
 from typing import Optional, Tuple
 from PIL import Image
 import io
-import asyncio
-from concurrent.futures import ThreadPoolExecutor
 from config import Config
 from logger_config import logger
 
 
 class ImageHandler:
-    """Handles image download, compression, and storage with async optimization."""
+    """Handles image download, compression, and storage."""
     
     def __init__(self, base_dir: str = None):
         """
@@ -23,8 +21,6 @@ class ImageHandler:
         self.base_dir = Path(base_dir or Config.IMAGE_DIR)
         self.max_width = Config.MAX_IMAGE_WIDTH
         self.quality = Config.IMAGE_QUALITY
-        # Thread pool for CPU-intensive image processing
-        self.executor = ThreadPoolExecutor(max_workers=4)
         
     def get_image_dir(self, message_datetime, channel_name: str) -> Path:
         """
@@ -65,65 +61,6 @@ class ImageHandler:
         safe_file_id = "".join(c if c.isalnum() or c in "-_" else "_" for c in file_id)
         filename = f"{safe_file_id}.{extension}"
         return self.get_image_dir(message_datetime, channel_name) / filename
-    
-    def _process_image_sync(self, photo_bytes: bytes, file_path: Path, original_size: int) -> Tuple[int, int, int, int]:
-        """
-        Synchronous image processing (runs in thread pool).
-        
-        Args:
-            photo_bytes: Raw image bytes
-            file_path: Path to save processed image
-            original_size: Original image size in bytes
-            
-        Returns:
-            Tuple of (compressed_size, width, height, compression_ratio)
-        """
-        # Open image with Pillow
-        img = Image.open(io.BytesIO(photo_bytes))
-        original_width, original_height = img.size
-        
-        # Determine file extension based on format
-        img_format = img.format.lower() if img.format else 'jpeg'
-        
-        # Keep WebP as-is, compress others
-        if img_format == 'webp' and Config.KEEP_WEBP:
-            should_compress = False
-        else:
-            # Convert to JPEG for compression
-            should_compress = True
-            if img.mode in ('RGBA', 'LA', 'P'):
-                # Convert to RGB for JPEG
-                background = Image.new('RGB', img.size, (255, 255, 255))
-                if img.mode == 'P':
-                    img = img.convert('RGBA')
-                background.paste(img, mask=img.split()[-1] if img.mode in ('RGBA', 'LA') else None)
-                img = background
-            elif img.mode != 'RGB':
-                img = img.convert('RGB')
-        
-        # Resize if needed
-        if original_width > self.max_width:
-            ratio = self.max_width / original_width
-            new_height = int(original_height * ratio)
-            img = img.resize((self.max_width, new_height), Image.Resampling.LANCZOS)
-        
-        # Save compressed image
-        if should_compress:
-            img.save(
-                file_path,
-                'JPEG',
-                quality=self.quality,
-                optimize=True
-            )
-        else:
-            # Save WebP as-is
-            img.save(file_path, 'WEBP')
-        
-        compressed_size = file_path.stat().st_size
-        final_width, final_height = img.size
-        compression_ratio = (1 - compressed_size / original_size) * 100
-        
-        return compressed_size, final_width, final_height, compression_ratio
         
     async def download_and_compress_photo(
         self,
@@ -133,7 +70,7 @@ class ImageHandler:
         file_id: str
     ) -> Optional[Tuple[str, int, int, int, int]]:
         """
-        Download and compress a photo from Telegram (async optimized).
+        Download and compress a photo from Telegram.
         
         Args:
             client: Telethon client
@@ -145,7 +82,7 @@ class ImageHandler:
             Tuple of (file_path, original_size, compressed_size, width, height) or None if failed
         """
         try:
-            # Download photo to memory (async, non-blocking)
+            # Download photo to memory
             photo_bytes = await client.download_media(message.photo, file=bytes)
             
             if not photo_bytes:
@@ -154,23 +91,59 @@ class ImageHandler:
                 
             original_size = len(photo_bytes)
             
-            # Determine extension
-            img_format = Image.open(io.BytesIO(photo_bytes)).format
-            extension = 'webp' if img_format and img_format.lower() == 'webp' and Config.KEEP_WEBP else 'jpg'
+            # Open image with Pillow
+            img = Image.open(io.BytesIO(photo_bytes))
+            original_width, original_height = img.size
+            
+            # Determine file extension based on format
+            img_format = img.format.lower() if img.format else 'jpeg'
+            
+            # Keep WebP as-is, compress others
+            if img_format == 'webp' and Config.KEEP_WEBP:
+                extension = 'webp'
+                should_compress = False
+            else:
+                # Convert to JPEG for compression
+                extension = 'jpg'
+                should_compress = True
+                if img.mode in ('RGBA', 'LA', 'P'):
+                    # Convert to RGB for JPEG
+                    background = Image.new('RGB', img.size, (255, 255, 255))
+                    if img.mode == 'P':
+                        img = img.convert('RGBA')
+                    background.paste(img, mask=img.split()[-1] if img.mode in ('RGBA', 'LA') else None)
+                    img = background
+                elif img.mode != 'RGB':
+                    img = img.convert('RGB')
+            
+
+            # Resize if needed
+            if original_width > self.max_width:
+                ratio = self.max_width / original_width
+                new_height = int(original_height * ratio)
+                img = img.resize((self.max_width, new_height), Image.Resampling.LANCZOS)
+                logger.debug(f"Resized image from {original_width}x{original_height} to {self.max_width}x{new_height}")
             
             # Get file path with date-based organization
             file_path = self.get_file_path(message.date, channel_name, file_id, extension)
             
-            # Process image in thread pool (non-blocking)
-            loop = asyncio.get_event_loop()
-            compressed_size, final_width, final_height, compression_ratio = await loop.run_in_executor(
-                self.executor,
-                self._process_image_sync,
-                photo_bytes,
-                file_path,
-                original_size
-            )
+            # Save compressed image
+            if should_compress:
+                img.save(
+                    file_path,
+                    'JPEG',
+                    quality=self.quality,
+                    optimize=True
+                )
+            else:
+                # Save WebP as-is
+                img.save(file_path, 'WEBP')
             
+            compressed_size = file_path.stat().st_size
+            final_width, final_height = img.size
+            
+            # Calculate compression ratio
+            compression_ratio = (1 - compressed_size / original_size) * 100
             logger.info(
                 f"Saved image: {file_path.name} | "
                 f"Original: {original_size/1024:.1f}KB | "
@@ -190,10 +163,6 @@ class ImageHandler:
         except Exception as e:
             logger.error(f"Error processing image {file_id}: {e}", exc_info=True)
             return None
-    
-    def cleanup(self):
-        """Cleanup thread pool executor."""
-        self.executor.shutdown(wait=True)
             
     def cleanup_orphaned_images(self):
         """
