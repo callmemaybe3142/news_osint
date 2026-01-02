@@ -1,6 +1,6 @@
 """
 Routes package initialization
 """
-from . import auth, dashboard
+from . import auth, dashboard, news
 
-__all__ = ['auth', 'dashboard']
+__all__ = ['auth', 'dashboard', 'news']

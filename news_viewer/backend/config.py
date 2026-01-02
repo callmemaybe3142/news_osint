@@ -22,8 +22,17 @@ class Settings:
     ALGORITHM: str = os.getenv("ALGORITHM", "HS256")
     ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60"))
     
-    # CORS
-    ALLOWED_ORIGINS: list = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173").split(",")
+    # CORS Settings
+    ALLOWED_ORIGINS: list = os.getenv(
+        "ALLOWED_ORIGINS",
+        "http://localhost:5173,http://localhost:3000"
+    ).split(",")
+    
+    # Image Storage Path
+    IMAGES_BASE_PATH: str = os.getenv(
+        "IMAGES_BASE_PATH",
+        "d:/JOB/PROJECTS/news_osint/news_collection/images"
+    )
     
     @property
     def database_url(self) -> str:

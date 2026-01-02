@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from config import settings
 from database import db
-from routes import auth, dashboard
+from routes import auth, dashboard, news
 
 
 @asynccontextmanager
@@ -39,6 +39,7 @@ app.add_middleware(
 # Include routers
 app.include_router(auth.router)
 app.include_router(dashboard.router)
+app.include_router(news.router)
 
 
 @app.get("/")
