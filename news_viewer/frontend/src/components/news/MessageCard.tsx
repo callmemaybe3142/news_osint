@@ -49,7 +49,6 @@ export const MessageCard = ({ message }: MessageCardProps) => {
     };
 
     const formatDate = (dateString: string) => {
-        // ... (existing implementation)
         const date = new Date(dateString);
         const now = new Date();
         const diffMs = now.getTime() - date.getTime();
@@ -115,6 +114,19 @@ export const MessageCard = ({ message }: MessageCardProps) => {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
                         </svg>
                     </button>
+
+                    {/* Open in Telegram Button */}
+                    <a
+                        href={`https://t.me/${message.channel_name}/${message.message_id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 rounded-full transition-smooth text-gray-400 hover:text-blue-500 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        title="Open in Telegram"
+                    >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                    </a>
                 </div>
 
                 {/* Message Text */}

@@ -58,7 +58,7 @@ export const ImageGallery = ({ images, initialIndex, onClose }: ImageGalleryProp
             {images.length > 1 && (
                 <button
                     onClick={handlePrevious}
-                    className="absolute left-4 z-10 p-3 bg-white/10 hover:bg-white/20 rounded-full transition-smooth"
+                    className="absolute left-4 z-10 p-3 bg-blue-500/50 hover:bg-white/20 rounded-full transition-smooth"
                 >
                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -79,7 +79,7 @@ export const ImageGallery = ({ images, initialIndex, onClose }: ImageGalleryProp
             {images.length > 1 && (
                 <button
                     onClick={handleNext}
-                    className="absolute right-4 z-10 p-3 bg-white/10 hover:bg-white/20 rounded-full transition-smooth"
+                    className="absolute right-4 z-10 p-3 bg-blue-500/50 hover:bg-white/20 rounded-full transition-smooth"
                 >
                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
