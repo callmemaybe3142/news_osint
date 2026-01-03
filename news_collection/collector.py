@@ -54,8 +54,9 @@ class NewsCollector:
         try:
             logger.info("Refreshing materialized view for news viewer...")
             async with self.db.pool.acquire() as conn:
+                # Use non-concurrent refresh (requires unique index for CONCURRENTLY)
                 await conn.execute(
-                    "REFRESH MATERIALIZED VIEW CONCURRENTLY mv_grouped_messages"
+                    "REFRESH MATERIALIZED VIEW mv_grouped_messages"
                 )
             logger.info("✅ Materialized view refreshed successfully")
         except Exception as e:
