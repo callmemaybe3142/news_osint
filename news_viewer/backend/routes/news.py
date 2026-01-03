@@ -76,15 +76,19 @@ async def get_raw_news(
     
     where_clause = " AND ".join(where_conditions)
     
-    # Get distinct groups (by grouped_id or individual message_id)
-    # This query gets the first message of each group or standalone messages
-    count_query = f"""
-        SELECT COUNT(DISTINCT COALESCE(grouped_id::text, id::text)) as total
-        FROM messages m
-        LEFT JOIN channels c ON m.channel_id = c.telegram_channel_id
-        WHERE {where_clause}
-    """
-    total_result = await db.fetch_one(count_query, *params)
+
+    # Use materialized view for faster counting when no filters
+    if not channel_id and not category and not date_from and not date_to and not search_text:
+        count_query = "SELECT COUNT(*) as total FROM mv_grouped_messages"
+        total_result = await db.fetch_one(count_query)
+    else:
+        count_query = f"""
+            SELECT COUNT(DISTINCT COALESCE(grouped_id::text, id::text)) as total
+            FROM messages m
+            LEFT JOIN channels c ON m.channel_id = c.telegram_channel_id
+            WHERE {where_clause}
+        """
+        total_result = await db.fetch_one(count_query, *params)
     total = total_result['total'] if total_result else 0
     
     # Get messages grouped by grouped_id
