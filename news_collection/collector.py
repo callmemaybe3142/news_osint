@@ -48,6 +48,19 @@ class NewsCollector:
     async def cleanup(self):
         """Cleanup resources."""
         await self.db.close()
+    
+    async def refresh_materialized_view(self):
+        """Refresh the materialized view for news viewer performance."""
+        try:
+            logger.info("Refreshing materialized view for news viewer...")
+            async with self.db.pool.acquire() as conn:
+                await conn.execute(
+                    "REFRESH MATERIALIZED VIEW CONCURRENTLY mv_grouped_messages"
+                )
+            logger.info("✅ Materialized view refreshed successfully")
+        except Exception as e:
+            logger.warning(f"Failed to refresh materialized view: {e}")
+            logger.warning("This is not critical - the view will be refreshed later")
         
     def should_collect_message(self, message) -> Tuple[bool, str]:
         """
@@ -354,6 +367,9 @@ class NewsCollector:
                             logger.error(f"Error processing channel {channel_info['name']}: {result}")
                 
                 logger.info("Collection completed successfully")
+                
+                # Refresh materialized view for news viewer
+                await self.refresh_materialized_view()
                 
         except Exception as e:
             logger.error(f"Fatal error in collector: {e}", exc_info=True)
