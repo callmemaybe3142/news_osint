@@ -19,6 +19,9 @@ export const MessageCard = ({ message }: MessageCardProps) => {
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const [isFavorited, setIsFavorited] = useState(message.is_favorited);
     const [isToggling, setIsToggling] = useState(false);
+    const [showFullText, setShowFullText] = useState(false);
+
+    const MAX_TEXT_LENGTH = 300; // Characters to show before truncating
 
     const handleToggleFavorite = async () => {
         if (isToggling) return;
@@ -85,58 +88,93 @@ export const MessageCard = ({ message }: MessageCardProps) => {
         <>
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-lg transition-smooth p-4 mb-4 border border-gray-200 dark:border-gray-700">
                 {/* Channel Header */}
-                <div className="flex items-center space-x-3 mb-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center shadow-md">
+                <div className="flex items-start space-x-3 mb-3">
+                    {/* Avatar - spans full height */}
+                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center shadow-md flex-shrink-0">
                         <span className="text-white font-bold text-sm">
                             {message.channel_display_name?.charAt(0) || message.channel_name?.charAt(0) || '?'}
                         </span>
                     </div>
-                    <div className="flex-1">
+
+                    {/* Channel Info - name, datetime, category */}
+                    <div className="flex-1 min-w-0">
+                        {/* Channel Name */}
                         <h3 className="font-semibold text-gray-900 dark:text-white text-sm">
                             {message.channel_display_name || message.channel_name}
                         </h3>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
+
+                        {/* DateTime */}
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                             {formatDate(message.message_datetime)} • {formatTime(message.message_datetime)}
                         </p>
+
+                        {/* Category Chip */}
+                        {message.channel_category && (
+                            <div className="mt-1.5">
+                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${message.channel_category.toUpperCase().includes('SAC')
+                                    ? 'bg-red-600 text-white'
+                                    : 'bg-blue-600 text-white'
+                                    }`}>
+                                    {message.channel_category}
+                                </span>
+                            </div>
+                        )}
                     </div>
 
-                    {/* Archive/Favorite Button */}
-                    <button
-                        onClick={handleToggleFavorite}
-                        disabled={isToggling}
-                        className={`p-2 rounded-full transition-smooth ${isFavorited
-                            ? 'text-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-900/20'
-                            : 'text-gray-400 hover:text-yellow-500 hover:bg-gray-100 dark:hover:bg-gray-700'
-                            }`}
-                        title={isFavorited ? "Remove from favorites" : "Add to favorites"}
-                    >
-                        <svg className="w-5 h-5" fill={isFavorited ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                        </svg>
-                    </button>
+                    {/* Action Buttons */}
+                    <div className="flex items-center space-x-1 flex-shrink-0">
+                        {/* Archive/Favorite Button */}
+                        <button
+                            onClick={handleToggleFavorite}
+                            disabled={isToggling}
+                            className={`p-2 rounded-full transition-smooth ${isFavorited
+                                ? 'text-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-900/20'
+                                : 'text-gray-400 hover:text-yellow-500 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                }`}
+                            title={isFavorited ? "Remove from favorites" : "Add to favorites"}
+                        >
+                            <svg className="w-5 h-5" fill={isFavorited ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                            </svg>
+                        </button>
 
-                    {/* Open in Telegram Button */}
-                    <a
-                        href={`https://t.me/${message.channel_name}/${message.message_id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-2 rounded-full transition-smooth text-gray-400 hover:text-blue-500 hover:bg-gray-100 dark:hover:bg-gray-700"
-                        title="Open in Telegram"
-                    >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                        </svg>
-                    </a>
+                        {/* Open in Telegram Button */}
+                        <a
+                            href={`https://t.me/${message.channel_name}/${message.message_id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-2 rounded-full transition-smooth text-gray-400 hover:text-blue-500 hover:bg-gray-100 dark:hover:bg-gray-700"
+                            title="Open in Telegram"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                        </a>
+                    </div>
                 </div>
+
+
 
                 {/* Message Text */}
                 {message.message_text && (
                     <div className="mb-3">
                         <p className="text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words">
-                            {message.message_text}
+                            {message.message_text.length > MAX_TEXT_LENGTH && !showFullText
+                                ? `${message.message_text.substring(0, MAX_TEXT_LENGTH)}...`
+                                : message.message_text
+                            }
                         </p>
+                        {message.message_text.length > MAX_TEXT_LENGTH && (
+                            <button
+                                onClick={() => setShowFullText(!showFullText)}
+                                className="mt-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                            >
+                                {showFullText ? 'See Less' : 'See More'}
+                            </button>
+                        )}
                     </div>
                 )}
+
 
                 {/* Images Grid */}
                 {message.images && Array.isArray(message.images) && message.images.length > 0 && (

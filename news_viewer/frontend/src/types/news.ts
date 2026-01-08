@@ -19,6 +19,7 @@ export interface NewsMessage {
     grouped_id: number | null;
     channel_name: string;
     channel_display_name: string;
+    channel_category: string | null;
     images: NewsImage[];
     is_favorited: boolean;
 }

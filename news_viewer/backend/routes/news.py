@@ -117,6 +117,7 @@ async def get_raw_news(
             EXISTS(SELECT 1 FROM user_favorites uf WHERE uf.news_id = m.id AND uf.user_id = ${param_count + 2}) as is_favorited,
             c.name as channel_name,
             c.display_name as channel_display_name,
+            c.category as channel_category,
             gm.group_key,
             COALESCE(
                 json_agg(
@@ -136,7 +137,7 @@ async def get_raw_news(
             AND m.message_id = i.message_message_id
         GROUP BY m.id, m.channel_id, m.message_id, m.message_text, 
                  m.message_datetime, m.has_media, m.grouped_id,
-                 c.name, c.display_name, gm.group_key, gm.group_datetime
+                 c.name, c.display_name, c.category, gm.group_key, gm.group_datetime
         ORDER BY gm.group_datetime DESC, m.id ASC
     """
     
@@ -165,6 +166,7 @@ async def get_raw_news(
                 "is_favorited": msg['is_favorited'],
                 "channel_name": msg['channel_name'],
                 "channel_display_name": msg['channel_display_name'],
+                "channel_category": msg['channel_category'],
                 "images": []
             }
         
@@ -239,6 +241,7 @@ async def get_favorite_news(
             true as is_favorited,
             c.name as channel_name,
             c.display_name as channel_display_name,
+            c.category as channel_category,
             fm.created_at as fav_created_at,
             COALESCE(
                  json_agg(
@@ -267,7 +270,7 @@ async def get_favorite_news(
             
         GROUP BY m.id, m.channel_id, m.message_id, m.message_text, 
                  m.message_datetime, m.has_media, m.grouped_id,
-                 c.name, c.display_name, fm.created_at
+                 c.name, c.display_name, c.category, fm.created_at
         ORDER BY fm.created_at DESC
     """
     

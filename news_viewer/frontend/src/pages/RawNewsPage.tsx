@@ -8,6 +8,7 @@ import { useToast } from '../contexts/ToastContext';
 import { API_ENDPOINTS } from '../config/api';
 import type { NewsResponse, Channel } from '../types/news';
 import { MessageCard, Pagination, FilterModal, type NewsFilters } from '../components/news';
+import { ScrollToTopButton } from '../components/common/ScrollToTopButton';
 
 export const RawNewsPage = () => {
     const navigate = useNavigate();
@@ -213,6 +214,9 @@ export const RawNewsPage = () => {
                 channels={channels}
                 currentFilters={filters}
             />
+
+            {/* Scroll to Top Button */}
+            <ScrollToTopButton />
         </div>
     );
 };
