@@ -51,6 +51,48 @@ async def add_user(username: str, password: str):
         return False
 
 
+async def update_password(username: str, new_password: str):
+    """Update password for an existing user"""
+    try:
+        # Connect to database
+        conn = await asyncpg.connect(
+            host=settings.DB_HOST,
+            port=settings.DB_PORT,
+            database=settings.DB_NAME,
+            user=settings.DB_USER,
+            password=settings.DB_PASSWORD
+        )
+        
+        # Check if user exists
+        existing_user = await conn.fetchrow(
+            "SELECT id, username FROM users WHERE username = $1",
+            username
+        )
+        
+        if not existing_user:
+            print(f"❌ User '{username}' not found!")
+            await conn.close()
+            return False
+        
+        # Hash new password
+        password_hash = hash_password(new_password)
+        
+        # Update password
+        await conn.execute(
+            "UPDATE users SET password_hash = $1 WHERE username = $2",
+            password_hash,
+            username
+        )
+        
+        print(f"✅ Password updated successfully for user '{username}'!")
+        await conn.close()
+        return True
+        
+    except Exception as e:
+        print(f"❌ Error: {e}")
+        return False
+
+
 async def list_users():
     """List all users in the database"""
     try:
@@ -91,10 +133,11 @@ async def main():
     print("User Management Script - News Viewer")
     print("=" * 60)
     print("\n1. Add new user")
-    print("2. List all users")
-    print("3. Exit")
+    print("2. Update user password")
+    print("3. List all users")
+    print("4. Exit")
     
-    choice = input("\nEnter your choice (1-3): ").strip()
+    choice = input("\nEnter your choice (1-4): ").strip()
     
     if choice == "1":
         print("\n--- Add New User ---")
@@ -118,9 +161,30 @@ async def main():
         await add_user(username, password)
         
     elif choice == "2":
-        await list_users()
+        print("\n--- Update User Password ---")
+        username = input("Enter username: ").strip()
+        
+        if not username:
+            print("❌ Username cannot be empty!")
+            return
+        
+        new_password = getpass.getpass("Enter new password: ")
+        password_confirm = getpass.getpass("Confirm new password: ")
+        
+        if new_password != password_confirm:
+            print("❌ Passwords do not match!")
+            return
+        
+        if len(new_password) < 6:
+            print("❌ Password must be at least 6 characters long!")
+            return
+        
+        await update_password(username, new_password)
         
     elif choice == "3":
+        await list_users()
+        
+    elif choice == "4":
         print("Goodbye!")
         return
     else:

@@ -15,12 +15,15 @@ router = APIRouter()
 async def search_people(
     ministry_name: Optional[str] = Query(None, description="Ministry name to filter by"),
     department_id: Optional[int] = Query(None, description="Department ID to filter by"),
+    position_id: Optional[int] = Query(None, description="Position ID to filter by"),
+    name: Optional[str] = Query(None, description="Person name (partial match)"),
+    nrc: Optional[str] = Query(None, description="NRC number (partial match)"),
     offset: int = Query(0, ge=0, description="Pagination offset"),
     limit: int = Query(30, ge=1, le=100, description="Number of results to return"),
     current_user: UserResponse = Depends(get_current_user)
 ) -> Dict[str, Any]:
     """
-    Search for people by ministry and/or department
+    Search for people by ministry/department/position/name/NRC
     Returns person details with positions and punishments
     Optimized single query using window functions and JSON aggregation
     """
@@ -40,7 +43,25 @@ async def search_people(
         query_params.append(department_id)
         param_index += 1
     
-    where_clause = " AND " + " AND ".join(where_conditions) if where_conditions else ""
+    if position_id:
+        where_conditions.append(f"EXISTS (SELECT 1 FROM position_join pj WHERE pj.person_id = p.id AND pj.position_id = ${param_index})")
+        query_params.append(position_id)
+        param_index += 1
+    
+    if name:
+        where_conditions.append(f"p.name ILIKE ${param_index}")
+        query_params.append(f"%{name}%")
+        param_index += 1
+    
+    if nrc:
+        where_conditions.append(f"p.nrc_no ILIKE ${param_index}")
+        query_params.append(f"%{nrc}%")
+        param_index += 1
+    
+    # Build WHERE clause - start with WHERE if there are conditions
+    where_clause = ""
+    if where_conditions:
+        where_clause = "WHERE " + " AND ".join(where_conditions)
     
     # Add limit and offset parameters
     limit_param_index = param_index
@@ -89,8 +110,8 @@ async def search_people(
                 d.ministry,
                 COUNT(*) OVER() as total_count
             FROM person p
-            INNER JOIN md_join md ON p.id = md.person_id
-            INNER JOIN departments d ON md.department_id = d.department_id
+            LEFT JOIN md_join md ON p.id = md.person_id
+            LEFT JOIN departments d ON md.department_id = d.department_id
             {where_clause}
         )
         SELECT 

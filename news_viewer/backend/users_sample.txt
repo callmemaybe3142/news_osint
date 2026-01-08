@@ -1,0 +1,16 @@
+# Sample users file for bulk import
+# Format: username,password
+# Lines starting with # are comments and will be ignored
+
+# Admin users
+admin,admin123456
+superuser,super123456
+
+# Regular users
+john,password123
+jane,password456
+bob,securepass789
+
+# Test users
+testuser1,testpass123
+testuser2,testpass456

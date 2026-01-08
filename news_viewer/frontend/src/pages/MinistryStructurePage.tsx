@@ -7,6 +7,7 @@ import { useState, useEffect, useMemo } from 'react';
 import API_BASE_URL from '../config/api';
 import { ministryStorage } from '../utils/ministryStorage';
 import type { MinistryStructureData, Ministry, Department } from '../types/person';
+import { ScrollToTopButton } from '../components/common/ScrollToTopButton';
 
 export const MinistryStructurePage = () => {
     const navigate = useNavigate();
@@ -288,6 +289,9 @@ export const MinistryStructurePage = () => {
                     </div>
                 )}
             </main>
+
+            {/* Scroll to Top Button */}
+            <ScrollToTopButton />
         </div>
     );
 };

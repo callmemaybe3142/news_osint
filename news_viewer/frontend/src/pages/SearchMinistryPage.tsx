@@ -12,10 +12,12 @@ import { MinistryDepartmentFilter } from '../components/person/MinistryDepartmen
 import { PersonSummaryCard } from '../components/person/PersonSummaryCard';
 import { PersonDetailsModal } from '../components/person/PersonDetailsModal';
 import { PersonSummarySkeletonGrid } from '../components/person/PersonSummaryCardSkeleton';
+import { ScrollToTopButton } from '../components/common/ScrollToTopButton';
 
 export const SearchMinistryPage = () => {
     const navigate = useNavigate();
     const [ministryData, setMinistryData] = useState<MinistryStructureData | null>(null);
+    const [loadingMinistryData, setLoadingMinistryData] = useState(true);
     const [selectedMinistry, setSelectedMinistry] = useState('');
     const [selectedDepartment, setSelectedDepartment] = useState<number | null>(null);
     const [searchResults, setSearchResults] = useState<Person[]>([]);
@@ -37,6 +39,7 @@ export const SearchMinistryPage = () => {
             const cached = ministryStorage.get();
             if (cached) {
                 setMinistryData(cached);
+                setLoadingMinistryData(false);
                 return;
             }
 
@@ -58,6 +61,9 @@ export const SearchMinistryPage = () => {
                 ministryStorage.save(data);
             } catch (err) {
                 console.error('Failed to load ministry data:', err);
+                setError('Failed to load ministry data');
+            } finally {
+                setLoadingMinistryData(false);
             }
         };
 
@@ -164,7 +170,14 @@ export const SearchMinistryPage = () => {
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="space-y-6">
                     {/* Filter Component */}
-                    {ministryData && (
+                    {loadingMinistryData ? (
+                        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                            <div className="flex items-center justify-center py-8">
+                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                                <span className="ml-3 text-gray-600 dark:text-gray-400">Loading ministries...</span>
+                            </div>
+                        </div>
+                    ) : ministryData ? (
                         <MinistryDepartmentFilter
                             ministries={ministryData.ministries}
                             selectedMinistry={selectedMinistry}
@@ -173,7 +186,7 @@ export const SearchMinistryPage = () => {
                             onDepartmentChange={setSelectedDepartment}
                             onSearch={() => handleSearch(false)}
                         />
-                    )}
+                    ) : null}
 
                     {/* Loading Skeleton State */}
                     {loading && (
@@ -283,6 +296,9 @@ export const SearchMinistryPage = () => {
                     onClose={handleCloseModal}
                 />
             )}
+
+            {/* Scroll to Top Button */}
+            <ScrollToTopButton />
         </div>
     );
 };

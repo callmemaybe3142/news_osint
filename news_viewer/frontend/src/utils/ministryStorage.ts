@@ -7,7 +7,7 @@ import { type MinistryStructureData } from '../types/person';
 
 const STORAGE_KEY = 'ministry_structure_data';
 const STORAGE_TIMESTAMP_KEY = 'ministry_structure_timestamp';
-const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
+const CACHE_DURATION = 3000 * 60 * 1000; // 30 minutes
 
 export const ministryStorage = {
     /**
