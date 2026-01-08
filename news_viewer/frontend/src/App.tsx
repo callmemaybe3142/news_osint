@@ -9,6 +9,13 @@ import { RawNewsPage } from './pages/RawNewsPage';
 import { CleanedNewsPage } from './pages/CleanedNewsPage';
 import { SavedNewsPage } from './pages/SavedNewsPage';
 import { SettingsPage } from './pages/SettingsPage';
+import {
+  LeakedPeoplePage,
+  SearchPersonPage,
+  SearchMinistryPage,
+  SearchPositionPage,
+  MinistryStructurePage
+} from './pages';
 import './index.css';
 
 function App() {
@@ -56,6 +63,47 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <SettingsPage />
+                  </ProtectedRoute>
+                }
+              />
+              {/* Leaked People Routes */}
+              <Route
+                path="/leaked-people"
+                element={
+                  <ProtectedRoute>
+                    <LeakedPeoplePage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/leaked-people/search-person"
+                element={
+                  <ProtectedRoute>
+                    <SearchPersonPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/leaked-people/search-ministry"
+                element={
+                  <ProtectedRoute>
+                    <SearchMinistryPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/leaked-people/search-position"
+                element={
+                  <ProtectedRoute>
+                    <SearchPositionPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/leaked-people/ministry-structure"
+                element={
+                  <ProtectedRoute>
+                    <MinistryStructurePage />
                   </ProtectedRoute>
                 }
               />

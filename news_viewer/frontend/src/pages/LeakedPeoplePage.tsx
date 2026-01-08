@@ -1,79 +1,66 @@
 /**
- * Dashboard Page Component
+ * Leaked People Main Page
+ * Navigation hub for person-related searches
  */
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
-export const DashboardPage = () => {
-    const { user, logout } = useAuth();
+export const LeakedPeoplePage = () => {
+    const { logout } = useAuth();
     const navigate = useNavigate();
 
-    const navigationCards = [
+    const searchCards = [
         {
-            title: 'Raw News',
-            description: 'View all collected news from Telegram channels',
+            title: 'Search by Name/NRC',
+            description: 'Search for individuals by name or NRC number',
             icon: (
                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
             ),
-            gradient: 'from-blue-500 to-indigo-600',
-            bgGradient: 'from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20',
+            gradient: 'from-blue-500 to-cyan-600',
+            bgGradient: 'from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20',
             borderColor: 'border-blue-100 dark:border-blue-800',
-            route: '/raw-news'
+            route: '/leaked-people/search-person'
         },
         {
-            title: 'Leaked People',
-            description: 'Search and analyze personnel database information',
+            title: 'Search by Ministry',
+            description: 'Find people by their ministry affiliation',
             icon: (
                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-            ),
-            gradient: 'from-red-500 to-pink-600',
-            bgGradient: 'from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20',
-            borderColor: 'border-red-100 dark:border-red-800',
-            route: '/leaked-people'
-        },
-        {
-            title: 'Cleaned News',
-            description: 'View filtered and processed news articles',
-            icon: (
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
             ),
             gradient: 'from-green-500 to-emerald-600',
             bgGradient: 'from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20',
             borderColor: 'border-green-100 dark:border-green-800',
-            route: '/cleaned-news'
+            route: '/leaked-people/search-ministry'
         },
         {
-            title: 'Saved News',
-            description: 'Access your bookmarked and saved articles',
+            title: 'Search by Position',
+            description: 'Search for people by their job position or rank',
             icon: (
                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
             ),
             gradient: 'from-purple-500 to-pink-600',
             bgGradient: 'from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20',
             borderColor: 'border-purple-100 dark:border-purple-800',
-            route: '/saved-news'
+            route: '/leaked-people/search-position'
         },
         {
-            title: 'Settings',
-            description: 'Configure your preferences and account',
+            title: 'Ministry Structure',
+            description: 'View organizational structure of ministries and departments',
             icon: (
                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
             ),
             gradient: 'from-orange-500 to-red-600',
             bgGradient: 'from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20',
             borderColor: 'border-orange-100 dark:border-orange-800',
-            route: '/settings'
+            route: '/leaked-people/ministry-structure'
         }
     ];
 
@@ -84,14 +71,22 @@ export const DashboardPage = () => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
-                            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center shadow-lg">
+                            <button
+                                onClick={() => navigate('/dashboard')}
+                                className="w-10 h-10 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg flex items-center justify-center transition-smooth"
+                            >
+                                <svg className="w-6 h-6 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                                </svg>
+                            </button>
+                            <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-pink-600 rounded-lg flex items-center justify-center shadow-lg">
                                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                                 </svg>
                             </div>
                             <div>
-                                <h1 className="text-xl font-bold text-gray-900 dark:text-white">News Viewer</h1>
-                                <p className="text-sm text-gray-500 dark:text-gray-400">Welcome, {user?.username}</p>
+                                <h1 className="text-xl font-bold text-gray-900 dark:text-white">Leaked People Database</h1>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">Search and analyze personnel information</p>
                             </div>
                         </div>
 
@@ -113,13 +108,13 @@ export const DashboardPage = () => {
                 <div className="animate-fade-in">
                     {/* Welcome Section */}
                     <div className="mb-8">
-                        <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Dashboard</h2>
-                        <p className="text-gray-600 dark:text-gray-400">Select a section to get started</p>
+                        <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Search Options</h2>
+                        <p className="text-gray-600 dark:text-gray-400">Choose a search method to find personnel information</p>
                     </div>
 
-                    {/* Navigation Cards */}
+                    {/* Search Cards */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {navigationCards.map((card, index) => (
+                        {searchCards.map((card, index) => (
                             <button
                                 key={index}
                                 onClick={() => navigate(card.route)}
