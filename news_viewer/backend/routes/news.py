@@ -23,6 +23,7 @@ async def get_raw_news(
     date_from: Optional[str] = None,
     date_to: Optional[str] = None,
     search_text: Optional[str] = None,
+    search_operator: str = Query('OR', regex='^(AND|OR)$'),
     current_user: UserResponse = Depends(get_current_user)
 ):
     """
@@ -35,7 +36,8 @@ async def get_raw_news(
     - category: Filter by channel category
     - date_from: Filter messages from this date (YYYY-MM-DD)
     - date_to: Filter messages until this date (YYYY-MM-DD)
-    - search_text: Search in message text (supports partial matching)
+    - search_text: Search in message text (supports multiple keywords separated by commas)
+    - search_operator: 'AND' for all keywords, 'OR' for any keyword (default: 'OR')
     """
     offset = (page - 1) * page_size
     
@@ -69,10 +71,26 @@ async def get_raw_news(
         param_count += 1
     
     if search_text:
-        # Use trigram similarity for partial text matching (supports Burmese and other languages)
-        where_conditions.append(f"m.message_text ILIKE ${param_count}")
-        params.append(f"%{search_text}%")
-        param_count += 1
+        # Split by comma and trim whitespace
+        keywords = [keyword.strip() for keyword in search_text.split(',') if keyword.strip()]
+        
+        if keywords:
+            if search_operator == 'AND':
+                # All keywords must be present
+                keyword_conditions = []
+                for keyword in keywords:
+                    keyword_conditions.append(f"m.message_text ILIKE ${param_count}")
+                    params.append(f"%{keyword}%")
+                    param_count += 1
+                where_conditions.append(f"({' AND '.join(keyword_conditions)})")
+            else:  # OR
+                # Any keyword can be present
+                keyword_conditions = []
+                for keyword in keywords:
+                    keyword_conditions.append(f"m.message_text ILIKE ${param_count}")
+                    params.append(f"%{keyword}%")
+                    param_count += 1
+                where_conditions.append(f"({' OR '.join(keyword_conditions)})")
     
     where_clause = " AND ".join(where_conditions)
     

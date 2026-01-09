@@ -26,7 +26,8 @@ export const RawNewsPage = () => {
         category: null,
         date_from: null,
         date_to: null,
-        search_text: null
+        search_text: null,
+        search_operator: 'AND'
     });
 
     // Fetch channels
@@ -58,14 +59,17 @@ export const RawNewsPage = () => {
             try {
                 const params = new URLSearchParams({
                     page: currentPage.toString(),
-                    page_size: '20',
+                    page_size: '30',
                 });
 
                 if (filters.channel_id) params.append('channel_id', filters.channel_id.toString());
                 if (filters.category) params.append('category', filters.category);
                 if (filters.date_from) params.append('date_from', filters.date_from);
                 if (filters.date_to) params.append('date_to', filters.date_to);
-                if (filters.search_text) params.append('search_text', filters.search_text);
+                if (filters.search_text) {
+                    params.append('search_text', filters.search_text);
+                    params.append('search_operator', filters.search_operator);
+                }
 
                 const response = await fetch(`${API_ENDPOINTS.RAW_NEWS}?${params}`, {
                     headers: {
@@ -99,8 +103,10 @@ export const RawNewsPage = () => {
         setCurrentPage(1); // Reset to first page when filters change
     };
 
-    // Count active filters
-    const activeFilterCount = Object.values(filters).filter(v => v !== null).length;
+    // Count active filters (exclude search_operator as it's always set)
+    const activeFilterCount = Object.entries(filters)
+        .filter(([key, value]) => key !== 'search_operator' && value !== null)
+        .length;
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 overflow-x-hidden">
@@ -194,7 +200,8 @@ export const RawNewsPage = () => {
                                     category: null,
                                     date_from: null,
                                     date_to: null,
-                                    search_text: null
+                                    search_text: null,
+                                    search_operator: 'OR'
                                 })}
                                 className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-smooth"
                             >
