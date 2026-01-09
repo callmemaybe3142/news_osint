@@ -2,7 +2,6 @@
  * Raw News Page - Display raw messages with Telegram-like UI
  */
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { API_ENDPOINTS } from '../config/api';
@@ -11,7 +10,6 @@ import { MessageCard, Pagination, FilterModal, type NewsFilters } from '../compo
 import { ScrollToTopButton } from '../components/common/ScrollToTopButton';
 
 export const RawNewsPage = () => {
-    const navigate = useNavigate();
     const { token } = useAuth();
     const { showToast } = useToast();
 
@@ -109,27 +107,17 @@ export const RawNewsPage = () => {
         .length;
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 overflow-x-hidden">
-            {/* Header */}
-            <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
+        <div className="min-h-screen overflow-x-hidden">
+            {/* Page Header */}
+            <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
                 <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                     <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                            <button
-                                onClick={() => navigate('/dashboard')}
-                                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-smooth"
-                            >
-                                <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                                </svg>
-                            </button>
-                            <div>
-                                <h1 className="text-xl font-bold text-gray-900 dark:text-white">Raw News</h1>
-                                <p className="text-sm text-gray-500 dark:text-gray-400">
-                                    {newsData ? `${newsData.pagination.total} messages` : 'Loading...'}
-                                    {activeFilterCount > 0 && ` • ${activeFilterCount} filter${activeFilterCount > 1 ? 's' : ''} active`}
-                                </p>
-                            </div>
+                        <div>
+                            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Raw News</h1>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                                {newsData ? `${newsData.pagination.total} messages` : 'Loading...'}
+                                {activeFilterCount > 0 && ` • ${activeFilterCount} filter${activeFilterCount > 1 ? 's' : ''} active`}
+                            </p>
                         </div>
 
                         {/* Filter Button */}
@@ -149,7 +137,7 @@ export const RawNewsPage = () => {
                         </button>
                     </div>
                 </div>
-            </header>
+            </div>
 
             {/* Main Content */}
             <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
