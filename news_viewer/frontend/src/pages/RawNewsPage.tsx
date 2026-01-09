@@ -156,7 +156,11 @@ export const RawNewsPage = () => {
                         {/* Messages List */}
                         <div className="space-y-4 animate-fade-in">
                             {newsData.messages.map((message) => (
-                                <MessageCard key={message.id} message={message} />
+                                <MessageCard
+                                    key={message.id}
+                                    message={message}
+                                    searchTerms={filters.search_text}
+                                />
                             ))}
                         </div>
 

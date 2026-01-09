@@ -2,7 +2,7 @@
  * Message Card Component - Telegram-like message display
  */
 import { IMAGE_BASE_URL, API_ENDPOINTS } from '../../config/api';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import type { NewsMessage } from '../../types/news';
 import { ImageGallery } from './ImageGallery';
 import { useAuth } from '../../contexts/AuthContext';
@@ -10,9 +10,10 @@ import { useToast } from '../../contexts/ToastContext';
 
 interface MessageCardProps {
     message: NewsMessage;
+    searchTerms?: string | null;
 }
 
-export const MessageCard = ({ message }: MessageCardProps) => {
+export const MessageCard = ({ message, searchTerms }: MessageCardProps) => {
     const { token } = useAuth();
     const { showToast } = useToast();
     const [showFullImage, setShowFullImage] = useState(false);
@@ -82,6 +83,80 @@ export const MessageCard = ({ message }: MessageCardProps) => {
     const handleImageClick = (index: number) => {
         setSelectedImageIndex(index);
         setShowFullImage(true);
+    };
+
+    // Parse search terms and create highlighted content
+    const processedContent = useMemo(() => {
+        if (!message.message_text) return null;
+
+        let textToDisplay = message.message_text;
+
+        // Truncate if needed
+        if (textToDisplay.length > MAX_TEXT_LENGTH && !showFullText) {
+            textToDisplay = textToDisplay.substring(0, MAX_TEXT_LENGTH) + '...';
+        }
+
+        // If no search terms, return plain text for markdown
+        if (!searchTerms || searchTerms.trim() === '') {
+            return { text: textToDisplay, hasHighlights: false };
+        }
+
+        // Parse comma-separated search terms
+        const terms = searchTerms
+            .split(',')
+            .map(term => term.trim())
+            .filter(term => term.length > 0);
+
+        if (terms.length === 0) {
+            return { text: textToDisplay, hasHighlights: false };
+        }
+
+        // Create regex pattern for all terms (case-insensitive)
+        const pattern = terms
+            .map(term => term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')) // Escape special chars
+            .join('|');
+
+        const regex = new RegExp(`(${pattern})`, 'gi');
+
+        return { text: textToDisplay, hasHighlights: true, regex, terms };
+    }, [message.message_text, searchTerms, showFullText]);
+
+    // Custom component to highlight text
+    const HighlightedText = ({ children }: { children: React.ReactNode }) => {
+        if (!processedContent?.hasHighlights || !processedContent.regex) {
+            return <>{children}</>;
+        }
+
+        // If children is a string, apply highlighting
+        if (typeof children === 'string') {
+            const parts = children.split(processedContent.regex);
+
+            return (
+                <>
+                    {parts.map((part, index) => {
+                        // Check if this part matches any search term (case-insensitive)
+                        const isMatch = processedContent.terms?.some(term =>
+                            part.toLowerCase() === term.toLowerCase()
+                        );
+
+                        if (isMatch) {
+                            return (
+                                <mark
+                                    key={index}
+                                    className="bg-yellow-300 dark:bg-yellow-600 px-0.5 rounded"
+                                >
+                                    {part}
+                                </mark>
+                            );
+                        }
+                        return <span key={index}>{part}</span>;
+                    })}
+                </>
+            );
+        }
+
+        // If children is an array or other React node, recursively process
+        return <>{children}</>;
     };
 
     return (
@@ -155,15 +230,12 @@ export const MessageCard = ({ message }: MessageCardProps) => {
 
 
 
-                {/* Message Text */}
-                {message.message_text && (
+                {/* Message Text with Search Highlighting */}
+                {message.message_text && processedContent && (
                     <div className="mb-3">
-                        <p className="text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words">
-                            {message.message_text.length > MAX_TEXT_LENGTH && !showFullText
-                                ? `${message.message_text.substring(0, MAX_TEXT_LENGTH)}...`
-                                : message.message_text
-                            }
-                        </p>
+                        <div className="text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words">
+                            <HighlightedText>{processedContent.text}</HighlightedText>
+                        </div>
                         {message.message_text.length > MAX_TEXT_LENGTH && (
                             <button
                                 onClick={() => setShowFullText(!showFullText)}

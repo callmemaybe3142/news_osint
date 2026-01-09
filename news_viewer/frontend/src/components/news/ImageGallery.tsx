@@ -33,12 +33,20 @@ export const ImageGallery = ({ images, initialIndex, onClose }: ImageGalleryProp
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [onClose, handlePrevious, handleNext]);
 
+    // Auto-scroll thumbnail strip to center the current image
+    useEffect(() => {
+        const thumbnail = document.getElementById(`thumb-${currentIndex}`);
+        if (thumbnail) {
+            thumbnail.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
+    }, [currentIndex]);
+
     return (
-        <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center animate-fade-in">
+        <div className="fixed inset-0 z-60 bg-black/95 flex items-center justify-center animate-fade-in">
             {/* Close Button */}
             <button
                 onClick={onClose}
-                className="absolute top-4 right-4 z-10 p-2 bg-white/10 hover:bg-white/20 rounded-full transition-smooth"
+                className="absolute top-4 right-4 z-60 p-2 bg-white/10 hover:bg-white/20 rounded-full transition-smooth"
             >
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -47,7 +55,7 @@ export const ImageGallery = ({ images, initialIndex, onClose }: ImageGalleryProp
 
             {/* Image Counter */}
             {images.length > 1 && (
-                <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 px-4 py-2 bg-white/10 rounded-full">
+                <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-60 px-4 py-2 bg-white/10 rounded-full">
                     <span className="text-white text-sm font-medium">
                         {currentIndex + 1} / {images.length}
                     </span>
@@ -58,7 +66,7 @@ export const ImageGallery = ({ images, initialIndex, onClose }: ImageGalleryProp
             {images.length > 1 && (
                 <button
                     onClick={handlePrevious}
-                    className="absolute left-4 z-10 p-3 bg-blue-500/50 hover:bg-white/20 rounded-full transition-smooth"
+                    className="absolute left-4 z-60 p-3 bg-blue-500/50 hover:bg-white/20 rounded-full transition-smooth"
                 >
                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -79,7 +87,7 @@ export const ImageGallery = ({ images, initialIndex, onClose }: ImageGalleryProp
             {images.length > 1 && (
                 <button
                     onClick={handleNext}
-                    className="absolute right-4 z-10 p-3 bg-blue-500/50 hover:bg-white/20 rounded-full transition-smooth"
+                    className="absolute right-4 z-60 p-3 bg-blue-500/50 hover:bg-white/20 rounded-full transition-smooth"
                 >
                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -89,23 +97,37 @@ export const ImageGallery = ({ images, initialIndex, onClose }: ImageGalleryProp
 
             {/* Thumbnail Strip */}
             {images.length > 1 && (
-                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-10 flex space-x-2 bg-white/10 p-2 rounded-lg max-w-screen-lg overflow-x-auto">
-                    {images.map((image, index) => (
-                        <button
-                            key={image.id}
-                            onClick={() => setCurrentIndex(index)}
-                            className={`flex-shrink-0 w-16 h-16 rounded overflow-hidden transition-smooth ${index === currentIndex
-                                ? 'ring-2 ring-white scale-110'
-                                : 'opacity-60 hover:opacity-100'
-                                }`}
-                        >
-                            <img
-                                src={`${IMAGE_BASE_URL}/${image.file_path}`}
-                                alt={`Thumbnail ${index + 1}`}
-                                className="w-full h-full object-cover"
-                            />
-                        </button>
-                    ))}
+                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-60 w-full max-w-screen-lg px-4">
+                    <div
+                        className="flex space-x-2 bg-white/10 p-2 rounded-lg overflow-x-auto overflow-y-hidden scroll-smooth snap-x snap-mandatory scrollbar-thin scrollbar-thumb-white/30 scrollbar-track-transparent hover:scrollbar-thumb-white/50"
+                        style={{
+                            scrollbarWidth: 'thin',
+                            scrollbarColor: 'rgba(255, 255, 255, 0.3) transparent'
+                        }}
+                    >
+                        {images.map((image, index) => (
+                            <button
+                                key={image.id}
+                                onClick={() => {
+                                    setCurrentIndex(index);
+                                    // Auto-scroll to center the clicked thumbnail
+                                    const button = document.getElementById(`thumb-${index}`);
+                                    button?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                                }}
+                                id={`thumb-${index}`}
+                                className={`flex-shrink-0 w-16 h-16 rounded overflow-hidden transition-smooth snap-center ${index === currentIndex
+                                    ? 'ring-2 ring-white scale-110'
+                                    : 'opacity-60 hover:opacity-100'
+                                    }`}
+                            >
+                                <img
+                                    src={`${IMAGE_BASE_URL}/${image.file_path}`}
+                                    alt={`Thumbnail ${index + 1}`}
+                                    className="w-full h-full object-cover"
+                                />
+                            </button>
+                        ))}
+                    </div>
                 </div>
             )}
         </div>
