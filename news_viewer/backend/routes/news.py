@@ -360,10 +360,11 @@ async def get_image(file_path: str):
     # Get base path from configuration
     base_path = Path(settings.IMAGES_BASE_PATH)
     
-    # The file_path from database already has backslashes (e.g., "2025\12\13\Hno969888\6190587795865275209.jpg")
-    # When it comes through the URL, backslashes are converted to forward slashes
-    # So we need to convert forward slashes back to backslashes for Windows
-    normalized_path = file_path.replace('/', '\\')
+    # The file_path from database may have backslashes (Windows) or forward slashes (URL encoding)
+    # pathlib.Path automatically handles both and normalizes to the OS-specific separator
+    # On Windows: converts / to \
+    # On Linux: keeps / as is
+    normalized_path = Path(file_path)
     
     # Build full path
     full_path = base_path / normalized_path
