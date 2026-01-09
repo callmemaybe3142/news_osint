@@ -1,7 +1,7 @@
 {
-    "name": "News Viewer - OSINT Platform",
+    "name": "All In One",
     "short_name": "News Viewer",
-    "description": "All-in-one OSINT platform for news collection and personnel database",
+    "description": "All-in-one OSINT platform for data collection",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#ffffff",

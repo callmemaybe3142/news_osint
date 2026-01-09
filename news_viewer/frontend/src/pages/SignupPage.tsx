@@ -13,12 +13,34 @@ export const SignupPage = () => {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [usernameError, setUsernameError] = useState('');
     const { signup } = useAuth();
     const navigate = useNavigate();
+
+    // Handle username input with validation
+    const handleUsernameChange = (value: string) => {
+        // Convert to lowercase and remove spaces and special characters
+        const sanitized = value.toLowerCase().replace(/[^a-z0-9]/g, '');
+        setUsername(sanitized);
+
+        // Show error if user tried to enter invalid characters
+        if (value !== sanitized) {
+            setUsernameError('Only lowercase letters and numbers allowed');
+            setTimeout(() => setUsernameError(''), 2000);
+        } else {
+            setUsernameError('');
+        }
+    };
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setError('');
+
+        // Validate username format
+        if (!/^[a-z0-9]+$/.test(username)) {
+            setError('Username must contain only lowercase letters and numbers');
+            return;
+        }
 
         // Validate passwords match
         if (password !== confirmPassword) {
@@ -102,15 +124,23 @@ export const SignupPage = () => {
                                 id="username"
                                 type="text"
                                 value={username}
-                                onChange={(e) => setUsername(e.target.value)}
+                                onChange={(e) => handleUsernameChange(e.target.value)}
                                 required
                                 minLength={3}
-                                className="w-full px-4 py-3.5 rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-smooth"
+                                pattern="[a-z0-9]+"
+                                className={`w-full px-4 py-3.5 rounded-xl border-2 ${usernameError
+                                        ? 'border-red-300 dark:border-red-600'
+                                        : 'border-gray-200 dark:border-gray-600'
+                                    } bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-smooth`}
                                 placeholder="Choose a username"
                                 disabled={isLoading}
+                                autoComplete="username"
                             />
-                            <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                                At least 3 characters
+                            <p className={`mt-1.5 text-xs ${usernameError
+                                    ? 'text-red-500 dark:text-red-400'
+                                    : 'text-gray-500 dark:text-gray-400'
+                                }`}>
+                                {usernameError || 'Lowercase letters and numbers only, at least 3 characters'}
                             </p>
                         </div>
 
