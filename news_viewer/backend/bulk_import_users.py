@@ -1,7 +1,7 @@
 """
 Bulk user import script
 Import multiple users from a text file
-File format: username,password (one per line)
+File format: username,password,role (one per line, role is optional, defaults to 0)
 """
 import asyncio
 import asyncpg
@@ -38,14 +38,15 @@ async def import_users_from_file(file_path: str):
         if not line or line.startswith('#'):
             continue
         
-        # Parse username,password
+        # Parse username,password,role (role is optional)
         parts = line.split(',')
-        if len(parts) != 2:
-            print(f"⚠️  Line {line_number}: Invalid format (expected: username,password) - Skipping")
+        if len(parts) < 2 or len(parts) > 3:
+            print(f"⚠️  Line {line_number}: Invalid format (expected: username,password or username,password,role) - Skipping")
             continue
         
         username = parts[0].strip()
         password = parts[1].strip()
+        role = int(parts[2].strip()) if len(parts) == 3 and parts[2].strip().isdigit() else 0
         
         # Validate username
         if not username or len(username) < 3:
@@ -57,7 +58,7 @@ async def import_users_from_file(file_path: str):
             print(f"⚠️  Line {line_number}: Password for '{username}' too short (min 6 chars) - Skipping")
             continue
         
-        users_to_add.append((username, password))
+        users_to_add.append((username, password, role))
     
     if not users_to_add:
         print("❌ No valid users found in file!")
@@ -84,7 +85,7 @@ async def import_users_from_file(file_path: str):
     skip_count = 0
     error_count = 0
     
-    for username, password in users_to_add:
+    for username, password, role in users_to_add:
         try:
             # Check if user already exists
             existing_user = await conn.fetchrow(
@@ -100,14 +101,15 @@ async def import_users_from_file(file_path: str):
             # Hash password
             password_hash = hash_password(password)
             
-            # Insert user
+            # Insert user with role
             await conn.execute(
-                "INSERT INTO users (username, password_hash) VALUES ($1, $2)",
+                "INSERT INTO users (username, password_hash, role) VALUES ($1, $2, $3)",
                 username,
-                password_hash
+                password_hash,
+                role
             )
             
-            print(f"✅ '{username}' - Created successfully")
+            print(f"✅ '{username}' - Created successfully (role: {role})")
             success_count += 1
             
         except Exception as e:
@@ -128,12 +130,19 @@ async def import_users_from_file(file_path: str):
 async def main():
     """Main function"""
     print("=" * 60)
-    print("Bulk User Import - News Viewer")
+    print("Bulk User Import - News Viewer (RBAC)")
     print("=" * 60)
-    print("\nFile format: username,password (one per line)")
-    print("Example:")
-    print("  john,mypassword123")
-    print("  jane,securepass456")
+    print("\nFile format: username,password,role (one per line)")
+    print("  - role is optional, defaults to 0 if not specified")
+    print("\nRole Levels:")
+    print("  0: Basic User (News only)")
+    print("  1: Advanced User")
+    print("  2: Admin (Person data access)")
+    print("  3: Super Admin")
+    print("\nExample:")
+    print("  john,mypassword123,0")
+    print("  jane,securepass456,2")
+    print("  admin,adminpass,3")
     print("  # This is a comment (lines starting with # are ignored)")
     print("\nNotes:")
     print("  - Username must be at least 3 characters")

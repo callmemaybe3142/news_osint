@@ -27,6 +27,7 @@ class UserResponse(BaseModel):
     """User response model"""
     id: int
     username: str
+    role: int = 0  # User role level
     created_at: datetime
     last_login: Optional[datetime] = None
 

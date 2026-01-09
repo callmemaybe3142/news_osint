@@ -4,6 +4,7 @@ import { ToastProvider } from './contexts/ToastContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { LoginPage } from './pages/LoginPage';
+import { SignupPage } from './pages/SignupPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { RawNewsPage } from './pages/RawNewsPage';
 import { CleanedNewsPage } from './pages/CleanedNewsPage';
@@ -26,6 +27,7 @@ function App() {
           <AuthProvider>
             <Routes>
               <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
               <Route
                 path="/dashboard"
                 element={

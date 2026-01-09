@@ -5,7 +5,7 @@ from fastapi import APIRouter, HTTPException, status, Depends
 from datetime import datetime
 from database import db
 from models import UserLogin, Token, UserResponse, ChangePassword
-from auth_utils import verify_password, create_access_token
+from auth_utils import verify_password, create_access_token, hash_password
 from dependencies import get_current_user
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
@@ -43,6 +43,40 @@ async def login(credentials: UserLogin):
     return Token(access_token=access_token)
 
 
+@router.post("/signup", response_model=Token)
+async def signup(credentials: UserLogin):
+    """
+    Register a new user with default role 0 (Basic User)
+    """
+    # Check if username already exists
+    existing_user = await db.fetch_one(
+        "SELECT id FROM users WHERE username = $1",
+        credentials.username
+    )
+    
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Username already exists"
+        )
+    
+    # Hash password
+    password_hash = hash_password(credentials.password)
+    
+    # Create new user with default role 0
+    await db.execute(
+        "INSERT INTO users (username, password_hash, role) VALUES ($1, $2, $3)",
+        credentials.username,
+        password_hash,
+        0  # Default role: Basic User
+    )
+    
+    # Create access token for immediate login
+    access_token = create_access_token(data={"sub": credentials.username})
+    
+    return Token(access_token=access_token)
+
+
 @router.get("/me", response_model=UserResponse)
 async def get_me(current_user: UserResponse = Depends(get_current_user)):
     """
@@ -67,8 +101,6 @@ async def change_password(
     """
     Change user password
     """
-    from auth_utils import hash_password
-    
     # Fetch user with password hash
     user = await db.fetch_one(
         "SELECT id, password_hash FROM users WHERE id = $1",

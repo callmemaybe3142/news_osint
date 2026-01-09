@@ -219,7 +219,7 @@ export const FilterModal = ({ isOpen, onClose, onApply, channels, currentFilters
                             onClick={handleApply}
                             className="px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-lg shadow-lg hover:shadow-xl transition-smooth font-medium"
                         >
-                            Apply Filters
+                            Apply
                         </button>
                     </div>
                 </div>
