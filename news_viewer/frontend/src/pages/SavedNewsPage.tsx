@@ -2,7 +2,7 @@
  * Saved News Page - Display user's favorite messages
  */
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { API_ENDPOINTS } from '../config/api';
@@ -10,7 +10,7 @@ import type { NewsResponse } from '../types/news';
 import { MessageCard, Pagination } from '../components/news';
 
 export const SavedNewsPage = () => {
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
     const { token } = useAuth();
     const { showToast } = useToast();
 
@@ -58,7 +58,7 @@ export const SavedNewsPage = () => {
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 overflow-x-hidden">
             {/* Header */}
-            <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
+            {/* <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
                 <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
@@ -79,7 +79,7 @@ export const SavedNewsPage = () => {
                         </div>
                     </div>
                 </div>
-            </header>
+            </header> */}
 
             {/* Main Content */}
             <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">

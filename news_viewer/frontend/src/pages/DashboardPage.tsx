@@ -81,7 +81,6 @@ export const DashboardPage = () => {
                 {/* Welcome Section */}
                 <div className="mb-8">
                     <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Dashboard</h2>
-                    <p className="text-gray-600 dark:text-gray-400">Select a section to get started</p>
                 </div>
 
                 {/* Navigation Cards */}

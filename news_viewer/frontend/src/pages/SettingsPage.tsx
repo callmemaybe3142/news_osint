@@ -2,14 +2,14 @@
  * Settings Page
  */
 import { useState, type FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import { useToast } from '../contexts/ToastContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { API_ENDPOINTS } from '../config/api';
 import { useAuth } from '../contexts/AuthContext';
 
 export const SettingsPage = () => {
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
     const { showToast } = useToast();
     const { theme, toggleTheme } = useTheme();
     const { token } = useAuth();
@@ -73,17 +73,6 @@ export const SettingsPage = () => {
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-8">
             <div className="max-w-4xl mx-auto">
-                {/* Back Button */}
-                <button
-                    onClick={() => navigate('/dashboard')}
-                    className="flex items-center space-x-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-6 transition-smooth"
-                >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                    </svg>
-                    <span>Back to Dashboard</span>
-                </button>
-
                 {/* Page Header */}
                 <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 border border-gray-200 dark:border-gray-700 mb-6 animate-fade-in">
                     <div className="flex items-center space-x-4">
