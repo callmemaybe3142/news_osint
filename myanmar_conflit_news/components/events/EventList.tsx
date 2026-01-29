@@ -143,9 +143,8 @@ export function EventList() {
                 ))}
             </div>
 
-            {/* Pagination */}
             {data.totalPages > 1 && (
-                <div className="flex items-center justify-center gap-2 pt-4">
+                <div className="flex flex-wrap items-center justify-center gap-1 pt-4 sm:gap-2">
                     {/* Previous Button */}
                     <button
                         onClick={() => goToPage(currentPage - 1)}

@@ -114,7 +114,7 @@ export function EventCard({ event }: EventCardProps) {
 
             {/* Notes - Increased font size and with highlighting */}
             <div className="mb-4">
-                <p className="text-base leading-relaxed text-gray-700 dark:text-gray-300">
+                <p className="break-words text-base leading-relaxed text-gray-700 dark:text-gray-300">
                     {highlightText(event.notes, searchText)}
                 </p>
             </div>
@@ -124,11 +124,11 @@ export function EventCard({ event }: EventCardProps) {
                 {/* Location */}
                 <div className="flex items-start gap-2">
                     <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-gray-500 dark:text-gray-400" />
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                         <div className="text-xs font-medium text-gray-500 dark:text-gray-400">
                             Location
                         </div>
-                        <div className="text-sm text-gray-900 dark:text-white">
+                        <div className="break-words text-sm text-gray-900 dark:text-white">
                             {locationDisplay}
                         </div>
                         {event.latitude && event.longitude && (
@@ -142,11 +142,11 @@ export function EventCard({ event }: EventCardProps) {
                 {/* Actors */}
                 <div className="flex items-start gap-2">
                     <Users className="mt-0.5 h-4 w-4 flex-shrink-0 text-gray-500 dark:text-gray-400" />
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                         <div className="text-xs font-medium text-gray-500 dark:text-gray-400">
                             Actors
                         </div>
-                        <div className="text-sm text-gray-900 dark:text-white">
+                        <div className="break-words text-sm text-gray-900 dark:text-white">
                             {actorsDisplay}
                         </div>
                         {associatedActors.length > 0 && (
@@ -160,11 +160,11 @@ export function EventCard({ event }: EventCardProps) {
                 {/* Interaction */}
                 <div className="flex items-start gap-2">
                     <FileText className="mt-0.5 h-4 w-4 flex-shrink-0 text-gray-500 dark:text-gray-400" />
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                         <div className="text-xs font-medium text-gray-500 dark:text-gray-400">
                             Interaction
                         </div>
-                        <div className="text-sm text-gray-900 dark:text-white">
+                        <div className="break-words text-sm text-gray-900 dark:text-white">
                             {event.interaction_title || `Code ${event.interaction_code}`}
                         </div>
                     </div>

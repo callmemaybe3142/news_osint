@@ -48,7 +48,7 @@ export function Navbar() {
             <div className="container mx-auto px-4">
                 <div className="flex h-16 items-center justify-between">
                     {/* Logo */}
-                    <Link href="/" className="flex items-center gap-2 font-bold text-xl tracking-tight">
+                    <Link href="/" className="flex items-center gap-2 font-bold text-lg tracking-tight sm:text-xl">
                         <span className="text-red-600 dark:text-red-500">Myanmar</span>
                         <span className="text-gray-900 transition-colors dark:text-white">
                             Conflict News
