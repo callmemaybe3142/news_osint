@@ -95,7 +95,7 @@ function EventDataContent() {
                     </aside>
 
                     {/* Event List */}
-                    <main className="flex-1">
+                    <main className="flex-1 min-w-0">
                         <Suspense
                             fallback={
                                 <div className="flex h-64 items-center justify-center">

@@ -71,7 +71,7 @@ export function EventCard({ event }: EventCardProps) {
     };
 
     return (
-        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-gray-800">
+        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-gray-800 sm:p-6">
             {/* Header */}
             <div className="mb-4 flex items-start justify-between gap-4">
                 <div className="flex-1">
@@ -211,7 +211,7 @@ export function EventCard({ event }: EventCardProps) {
                     <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
                         Sources ({event.sources.length})
                     </div>
-                    <div className="text-xs text-gray-600 dark:text-gray-400">
+                    <div className="break-words text-xs text-gray-600 dark:text-gray-400">
                         {event.sources.map((s) => s.source_name).join("; ")}
                     </div>
                 </div>
