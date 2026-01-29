@@ -51,7 +51,7 @@ export function Navbar() {
                     <Link href="/" className="flex items-center gap-2 font-bold text-xl tracking-tight">
                         <span className="text-red-600 dark:text-red-500">Myanmar</span>
                         <span className="text-gray-900 transition-colors dark:text-white">
-                            Conflict Dashboard
+                            Conflict News
                         </span>
                     </Link>
 
